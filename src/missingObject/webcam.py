@@ -6,7 +6,7 @@
 
 # La camara se encuentra en el puerto 0 del computador.
 camera_port = 0
-data_dir = "../outputData/"
+data_dir = "../../outputData/"
 
 
 # Se importa la libreria de numpy y matplotlib.
