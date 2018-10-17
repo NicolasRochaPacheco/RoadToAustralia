@@ -11,7 +11,7 @@ from espeak import espeak
 espeak.set_voice("es")
 
 # Charla de prueba
-espeak.synth( "Hola a tods" )
+espeak.synth( "Hola a todos." )
 
 while espeak.is_playing:
 	pass

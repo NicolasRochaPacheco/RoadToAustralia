@@ -1,4 +1,4 @@
-nombre, bebida
-Adelaida,Coca-Cola
-Carlos,Agua
-Juan David,Coctel
+nombre,bebida,estado
+Adelaida,Coca-Cola,no esta listo
+Carlos,Agua,no esta listo
+Juan David,Coctel,no esta listo
