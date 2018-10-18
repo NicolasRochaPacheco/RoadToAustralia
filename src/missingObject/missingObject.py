@@ -61,16 +61,16 @@ pedidos = []
 discurso = []
 
 # Variables de formatos de texto
-text0 = 'Hola '
+text0 = 'Hola, '
 text1 = ', tu pedido de '
 text2 = ' '
 
 # Lista de los objetos considerados para la seleccion
-beverage_list = [ 'bottle' , 'vase' ]
+beverage_list = [ 'bottle' , 'vase' , 'cup' ]
 
 # Diccionario para las clases de los objetos
 # TODO: Buscar la manera de traducir las clases de YOLOv2 y agregarlas al script.
-class_dict = { "person":"persona" , "bottle":"botella" , "cell phone":"celular" }
+class_dict = { "person":"persona" , "bottle":"botella" , "cell phone":"celular" , "vase":"vaso" , "cup":"taza"}
 
 
 #------------------------
@@ -92,6 +92,8 @@ image = lightnet.Image.from_bytes( open( img_file_path , 'rb' ).read() )
 
 # Se pasa la imagen en la red neuronal para obtener los objetos identificados.
 boxes = model( image )
+
+print( boxes )
 
 # Las clases de los boxes son leidos
 for objeto in boxes:
@@ -145,13 +147,13 @@ with open( csv_request_file_path , 'w' ) as csvfile:
 #	TEXT TO SPEECH
 
 for pedido in pedidos:
-	linea = text0 #+ pedido[0] + text1 + pedido[1] + text2 + pedido[2]
+	linea = text0 + pedido[0] + text1 + pedido[1] + text2 + pedido[2]
 	discurso.append(linea)
 
 for linea in discurso:
 	tts = gTTS( text=linea , lang='es' )
-	tts.save("joda.mp3")
-	os.system("mpg321 joda.mp3")
+	tts.save("speak.mp3")
+	os.system("mpg321 speak.mp3")
 
 
 
