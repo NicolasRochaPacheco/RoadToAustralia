@@ -37,12 +37,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.listaAlternativas = self.ListasEntendimiento.darListaAlternativas()
         self.totalClientes = 1
         self.alternativas = ""
+        self.alternativaReemplazo = ""
         self.clienteFaltante = Cliente("", "", "no esta listo")
         
     #Arranque
     def fn_init_ui(self):
         uic.loadUi("t2sUi.ui", self)
-        self.btnSpeak.clicked.connect(self.pedidos)
+        self.btnSpeak.clicked.connect(self.todosLosMetodos)
 
     #Metodo para hablar
     def robot_speak(self):
@@ -59,19 +60,25 @@ class MainWindow(QtWidgets.QMainWindow):
     def disculparNombre(self):
         string = self.saludos.disculparNombres(random.randint(1,3))
         self.t2sThread.say_something(string)
-        time.sleep(5)
+        time.sleep(4)
 
     #Disculparse por comprender mal el pedido
     def disculparPedido(self):
         string = self.saludos.disculparPedidos(random.randint(1,3))
         self.t2sThread.say_something(string)
-        time.sleep(7)
+        time.sleep(4)
+
+    #Disculparse por las alternativas
+    def disculparAlternativas(self):
+        string = self.saludos.disculparAlternativas(random.randint(1,3))
+        self.t2sThread.say_something(string)
+        time.sleep(4)
 
     #Pregunta que desea ordenar
     def solicitarPedido(self):
         string = self.saludos.solicitarPedidos(random.randint(1,3))
         self.t2sThread.say_something(string)
-        time.sleep(1)
+        time.sleep(2)
 
     #Se disculpa por no escuchar por el ruido
     def disculpaRuido(self):
@@ -90,7 +97,7 @@ class MainWindow(QtWidgets.QMainWindow):
         string = self.saludos.masClientes(random.randint(1,3))
         print(string)
         self.t2sThread.say_something(string)
-        time.sleep(10)
+        time.sleep(2)
 
     #Si no hay más clientes
     def noMasClientes(self):
@@ -112,9 +119,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
     #Informa al cliente las alternativas disponibles
     def informarAlternativas(self, alternativas, clienteFaltante):
-        string = "Lo siento" + clienteFaltante.darNombre() + " . No tengo " + clienteFaltante.darPedido() + ". Podría ofrecerte: " + self.alternativas
+        string = "Lo siento" + clienteFaltante.darNombre() + " . No tengo " + clienteFaltante.darPedido() + ". Podría ofrecerte: " + self.alternativas + ". ¿Que te gustaría?"
         self.t2sThread.say_something(string)
-        time.sleep(10)
+        time.sleep(5)
 
 
     #Métodos de entendimiento de lo que escucha el robot
@@ -176,7 +183,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def compresionAlternativaCliente(self,string):
         palabras = string.split()
         auxAlternativas =[]
-        for i in palbaras:
+        for i in palabras:
             if i in self.listaAlternativas:
                 auxAlternativas = palabras[(palabras.index(i)+1):(len(palabras))]
             else: 
@@ -192,6 +199,7 @@ class MainWindow(QtWidgets.QMainWindow):
         verificacionFinal = self.saludos.verificarFinal(random.randint(1,3))
         string = verificacionInicial + pNombre + verificacionFinal
         self.t2sThread.say_something(string)
+        time.sleep(2)
 
     #Veriica el pedido segun el numero
     def verificarPedido(self, pPedido):
@@ -199,13 +207,15 @@ class MainWindow(QtWidgets.QMainWindow):
         verificacionFinal = self.saludos.verificarFinal(random.randint(1,3))
         string = verificacionInicial + pPedido + verificacionFinal
         self.t2sThread.say_something(string)
+        time.sleep(2)
 
     #Verifica las alternativas del bartender
     def verificarAlternativas(self):
         verificacionInicial = "Comprendí las alternativas son"
         verificacionFinal = self.saludos.verificarFinal(random.randint(1,3))
-        string = verificacionIncial + self.altervativas + verificacionFinal
+        string = verificacionInicial + self.alternativas + verificacionFinal
         self.t2sThread.say_something(string)
+        time.sleep(5)
 
 
     #Métodos adicionales
@@ -219,6 +229,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     #Encuentra el cliente que pidio el objeto faltante
     def objetoFaltante(self): 
+        self.csvfile_reader()
         self.clienteFaltante =  Cliente("","","")
         for i in self.clientes:
             if i.darEstadoPedido() == "no esta listo":
@@ -361,31 +372,43 @@ class MainWindow(QtWidgets.QMainWindow):
             else:
                 self.noMasClientes()
             x+=1
+        self.csvfile_writer()
 
     #Informar al bartender los pedidos obtenidos
     def bartender(self):
-        self.t2sThread.say_something("Hola, Héctor, los pedidos que recibí son los siguientes:")
-        time.sleep(10)
-        x = 0
         self.csvfile_reader()
-        while x <= 2:
-            self.sting_bartender(self.clientes[x].darNombre(), self.clientes[x].darPedido())
-            time.sleep(6)
+        time.sleep(5)
+        self.t2sThread.say_something("Hola, Héctor, los pedidos que recibí son los siguientes:")
+        time.sleep(5)
+        x = 0
+        while x < self.totalClientes:
+            self.stingBartender(self.clientes[x].darNombre(), self.clientes[x].darPedido())
+            time.sleep(5)
             x+=1
         self.t2sThread.say_something("Me los podrías alistar?")
 
     #Escuchar al bartender las alternativas disponibles
     def alternativasProductoFaltante(self):
+        self.continuar = 0
+        self.noComprendio = 0
         self.objetoFaltante()
         self.pedidoAlternativas(self.clienteFaltante)
-        time.sleep(10)
         self.comprensionAlterntivas(self.capturarAudio())
-        self.verificarAlternativas()
-        time.sleep(10)
+        while self.continuar == 0:
+        	if self.noComprendio == 1:
+        		self.disculparAlternativas()
+        		print("No entendido las alternativas")
+        		self.comprensionAlterntivas(self.capturarAudio())
+        	self.verificarAlternativas()
+        	time.sleep(5)
+        	self.continuar = self.afirmacionCheck(self.capturarAudio())
+        	self.noComprendio = 1
 
+
+       	
     #Informar al cliente de las alternativas dispinibles, escucha y verifica la respeusta
     def clienteAlternativaReemplazo(self):
-        self.informarAlternativas()
+        self.informarAlternativas(self.alternativas, self.clienteFaltante)
         time.sleep(10)
         self.alternativaReemplazo = self.compresionAlternativaCliente(self.capturarAudio())
         self.verificarPedido(alternativaReemplazo)
@@ -394,6 +417,13 @@ class MainWindow(QtWidgets.QMainWindow):
     def bartenderAlternativaReemplazo(self):
         self.stingBartender(self.clienteFaltante.darNombre(),self.clienteFaltante.darPedido())
         time.sleep(10)
+
+    def todosLosMetodos(self):
+    	self.pedidos()
+    	self.bartender()
+    	self.alternativasProductoFaltante()
+    	self.clienteAlternativaReemplazo()
+    	self.bartenderAlternativaReemplazo()
 
 
 if __name__ == '__main__':
