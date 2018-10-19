@@ -1,5 +1,4 @@
 from PyQt5 import uic, QtWidgets
-#from T2S import T2S
 from T2SThread import T2SThread
 from PyQt5.QtWidgets import QApplication
 from Cliente import Cliente
@@ -13,7 +12,9 @@ import time
 import os 
 import sys
 import random
-import playsound
+import os
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton
+from PyQt5.QtCore import pyqtSlot
 
 class MainWindow(QtWidgets.QMainWindow):
 
@@ -42,8 +43,39 @@ class MainWindow(QtWidgets.QMainWindow):
         
     #Arranque
     def fn_init_ui(self):
-        uic.loadUi("t2sUi.ui", self)
-        self.btnSpeak.clicked.connect(self.bartender)
+    	self.setWindowTitle("Interacción oral")
+    	self.setGeometry(10, 10 , 500, 300)
+    	button1 = QPushButton('Pedidos', self)
+    	button1.setToolTip('Ejecutar el método pedidos')
+    	button1.move(100,30)
+    	button1.resize(250,25)
+    	button1.clicked.connect(self.pedidos)
+    	button2 = QPushButton('bartender', self)
+    	button2.setToolTip('Ejecutar el método bartender')
+    	button2.move(100,60)
+    	button2.resize(250,25)
+    	button2.clicked.connect(self.bartender)
+    	button3 = QPushButton('alternativasProductoFaltante', self)
+    	button3.setToolTip('Ejecutar el método alternativasProductoFaltante')
+    	button3.move(100,90)
+    	button3.resize(250,25)
+    	button3.clicked.connect(self.alternativasProductoFaltante)
+    	button4 = QPushButton('clienteAlternativaReemplazo', self)
+    	button4.setToolTip('Ejecutar el método clienteAlternativaReemplazo')
+    	button4.move(100,120)
+    	button4.resize(250,25)
+    	button4.clicked.connect(self.clienteAlternativaReemplazo)
+    	button5 = QPushButton('bartenderAlternativaReemplazo', self)
+    	button5.setToolTip('Ejecutar el método bartenderAlternativaReemplazo')
+    	button5.move(100,150)
+    	button5.resize(250,25)
+    	button5.clicked.connect(self.bartenderAlternativaReemplazo)
+    	button6 = QPushButton('todosLosMetodos', self)
+    	button6.setToolTip('Ejecutar el método todosLosMetodos')
+    	button6.move(100,180)
+    	button6.resize(250,25)
+    	button6.clicked.connect(self.todosLosMetodos)
+    	self.show()
 
     #Metodo para hablar
     def robot_speak(self):
@@ -78,7 +110,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def solicitarPedido(self):
         string = self.saludos.solicitarPedidos(random.randint(1,3))
         self.t2sThread.say_something(string)
-        time.sleep(2)
+        time.sleep(1.5)
 
     #Se disculpa por no escuchar por el ruido
     def disculpaRuido(self):
@@ -97,13 +129,13 @@ class MainWindow(QtWidgets.QMainWindow):
         string = self.saludos.masClientes(random.randint(1,3))
         print(string)
         self.t2sThread.say_something(string)
-        time.sleep(2)
+        time.sleep(1)
 
     #Si no hay más clientes
     def noMasClientes(self):
         string = self.saludos.noMasClientes(random.randint(1,3))
         self.t2sThread.say_something(string)
-        time.sleep(3)
+        time.sleep(1)
 
     #Le informa al bartender el pedido    
     def stingBartender(self, nombre, pedido):
@@ -308,7 +340,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def say_something(self,text):
     	grabacion = gTTS(text = text, lang = 'es')
     	grabacion.save('output.mp3')
-    	playsound.playsound('output.mp3',True)
+    	os.system("mpg321 output.mp3")
     
 
     #Método para obtener los pedidos    
@@ -384,16 +416,16 @@ class MainWindow(QtWidgets.QMainWindow):
     #Informar al bartender los pedidos obtenidos
     def bartender(self):
         self.csvfile_reader()
-        time.sleep(10)
-        self.say_something("Hola, Héctor, los pedidos que recibí son los siguientes:")
-        time.sleep(10)
+        time.sleep(5)
+        self.t2sThread.say_something("Hola, Héctor, los pedidos que recibí son los siguientes:")
+        time.sleep(7)
         x = 0
-        while x < 3:
-        	time.sleep(3)
+        print("totalClientes:" +str(self.totalClientes))
+        while x < self.totalClientes:
         	self.stingBartender(self.clientes[x].darNombre(), self.clientes[x].darPedido())
-        	time.sleep(5)
+        	time.sleep(10)
         	x+=1
-        self.say_something("Me los podrías alistar?")
+        self.t2sThread.say_something("Me los podrías alistar?")
 
     #Escuchar al bartender las alternativas disponibles
     def alternativasProductoFaltante(self):
