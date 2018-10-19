@@ -8,7 +8,7 @@ from PyQt5 import uic, QtWidgets, QtGui
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout
 import sys
 from PyQt5.QtCore import pyqtSlot
-#from missingObject.missingObjectThread import MissingObjectThread
+from missingObjectThread import MissingObjectThread
 
 class MainWindow( QtWidgets.QMainWindow ):
 
@@ -17,9 +17,9 @@ class MainWindow( QtWidgets.QMainWindow ):
 
 		self.bt_widget = ButtonWidget(self)
 		self.setCentralWidget(self.bt_widget)
-		#self.missingObjectThread = MissingObjectThread()
+		self.missingObjectThread = MissingObjectThread()
 		#self.missingObjectThread.objectSignal.connect('')
-		#self.missingObjectThread.start()
+		self.missingObjectThread.start()
 
 class ButtonWidget(QWidget):
 
