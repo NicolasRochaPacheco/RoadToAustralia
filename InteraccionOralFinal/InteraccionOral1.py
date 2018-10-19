@@ -3,17 +3,17 @@ from PyQt5 import uic, QtWidgets
 from T2SThread import T2SThread
 from PyQt5.QtWidgets import QApplication
 from Cliente import Cliente
-import os 
+from gtts import gTTS
+from Saludos import Saludos
+from ListasEntendimiento import ListasEntendimiento
 import speech_recognition as sr
+import os 
 import csv
 import time
 import os 
 import sys
-from ListasEntendimiento import ListasEntendimiento
 import random
-from gtts import gTTS
 import playsound
-from Saludos import Saludos
 
 class MainWindow(QtWidgets.QMainWindow):
 
@@ -36,14 +36,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.listaBartender = self.ListasEntendimiento.darListaBartender()
         self.listaAlternativas = self.ListasEntendimiento.darListaAlternativas()
         self.totalClientes = 1
-        self.alternativas = ""
+        self.alternativas = "agua o cerveza"
         self.alternativaReemplazo = ""
-        self.clienteFaltante = Cliente("", "", "no esta listo")
+        self.clienteFaltante = Cliente("Juan José", "una gaseosa", "no esta listo")
         
     #Arranque
     def fn_init_ui(self):
         uic.loadUi("t2sUi.ui", self)
-        self.btnSpeak.clicked.connect(self.todosLosMetodos)
+        self.btnSpeak.clicked.connect(self.bartender)
 
     #Metodo para hablar
     def robot_speak(self):
@@ -305,7 +305,14 @@ class MainWindow(QtWidgets.QMainWindow):
             audio1 = "Could not request results from Google Speech Recognition service"
         return audio1
 
+    def say_something(self,text):
+    	grabacion = gTTS(text = text, lang = 'es')
+    	grabacion.save('output.mp3')
+    	playsound.playsound('output.mp3',True)
+    
+
     #Método para obtener los pedidos    
+    
     def pedidos(self):
         x=0
         self.continuar = 0
@@ -377,15 +384,16 @@ class MainWindow(QtWidgets.QMainWindow):
     #Informar al bartender los pedidos obtenidos
     def bartender(self):
         self.csvfile_reader()
-        time.sleep(5)
-        self.t2sThread.say_something("Hola, Héctor, los pedidos que recibí son los siguientes:")
-        time.sleep(5)
+        time.sleep(10)
+        self.say_something("Hola, Héctor, los pedidos que recibí son los siguientes:")
+        time.sleep(10)
         x = 0
-        while x < self.totalClientes:
-            self.stingBartender(self.clientes[x].darNombre(), self.clientes[x].darPedido())
-            time.sleep(5)
-            x+=1
-        self.t2sThread.say_something("Me los podrías alistar?")
+        while x < 3:
+        	time.sleep(3)
+        	self.stingBartender(self.clientes[x].darNombre(), self.clientes[x].darPedido())
+        	time.sleep(5)
+        	x+=1
+        self.say_something("Me los podrías alistar?")
 
     #Escuchar al bartender las alternativas disponibles
     def alternativasProductoFaltante(self):
@@ -408,10 +416,24 @@ class MainWindow(QtWidgets.QMainWindow):
        	
     #Informar al cliente de las alternativas dispinibles, escucha y verifica la respeusta
     def clienteAlternativaReemplazo(self):
+        self.continuar = 0
+        self.noComprendio = 0
         self.informarAlternativas(self.alternativas, self.clienteFaltante)
-        time.sleep(10)
+        time.sleep(5)
         self.alternativaReemplazo = self.compresionAlternativaCliente(self.capturarAudio())
-        self.verificarPedido(alternativaReemplazo)
+        self.verificarPedido(self.alternativaReemplazo)
+        while self.continuar == 0:
+        	if self.noComprendio == 1:
+        		self.disculparRuidos()
+        		print("No entendido la alternativa reemplazo")
+        		self.alternativaReemplazo = self.compresionAlternativaCliente(self.capturarAudio())
+        		self.verificarPedido(self.alternativaReemplazo)
+        	time.sleep(2)
+        	self.continuar = self.afirmacionCheck(self.capturarAudio())
+        	self.noComprendio = 1
+        self.clienteFaltante.cambiarPedido(self.alternativaReemplazo)
+        self.confirmarPedido(self.alternativaReemplazo)
+
 
     #Le infroma al bartender de la alternativa reemplzao
     def bartenderAlternativaReemplazo(self):
