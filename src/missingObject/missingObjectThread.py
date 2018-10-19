@@ -22,6 +22,7 @@ class MissingObjectThread( QThread ):
 
 	def __init__(self):
 		super( MissingObjectThread , self ).__init__()
+
 		self.camera_port = 0
 		self.csv_request_file_path = "../../data/request.csv"
 		self.img_file_path = "../../data/img.jpg"
@@ -37,13 +38,13 @@ class MissingObjectThread( QThread ):
 					"cup":"taza" }
 		self.running = False
 		self.model = lightnet.load('yolo')
-		self.cap = cv2.VideoCapture( camera_port )
+		self.cap = cv2.VideoCapture( self.camera_port )
 
 	def run(self):
 		self.running = True
 		while self.running:
 			ret, frame = self.cap.read()
-			cv2.imwrite( img_file_path , frame )
+			cv2.imwrite( self.img_file_path , frame )
 			self.cap.release()
 			cv2.destroyAllWindows()
 			image = lightnet.Image.from_bytes( open( self.img_file_path , 'rb' ).read() )
@@ -80,10 +81,10 @@ class MissingObjectThread( QThread ):
 			csv_writer.writerows( self.pedidos )
 
 	def textToSpeech(self):
-		for pedido in pedidos:
-			linea = text0 + pedido[0] + text1 + pedido[1] + text2 + pedido[2]
-			discurso.append(linea)
-		for linea in discurso:
+		for pedido in self.pedidos:
+			linea = self.texto[0] + pedido[0] + self.texto[1] + pedido[1] + self.texto[2] + pedido[2]
+			self.discurso.append(linea)
+		for linea in self.discurso:
 			tts = gTTS( text=linea , lang='es' )
 			tts.save("speak.mp3")
 			os.system("mpg321 speak.mp3")
