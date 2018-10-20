@@ -41,10 +41,11 @@ while 1
 			state = verifyName
 		
 	if state == verifyName:
-		missunderstoodName = OralInteraction.verifyName(name)
+		OralInteraction.verifyName(name)
+		missunderstoodName = OralInteraction.affirmationCheck(OralInteraction.capturarAudio())
 		if missunderstoodName == False
 			state = requestDrink
-			newCliente = Cliente(name,"","no esta listo")
+			newClient = Cliente(name,"","no esta listo")
 		else:
 			state = apology
 
@@ -61,10 +62,12 @@ while 1
 			state = verifyDrink
 		
 	if state == verifyDrink:
-		missunderstoodDrink = OralInteraction.verifyDrink(drink)
+		OralInteraction.verifyDrink(drink)
+		missunderstoodDrink = OralInteraction.affirmationCheck(OralInteraction.capturarAudio())
 		if missunderstoodDrink == False
 			state = requestNewPerson
-			newCliente.cambiarPedido(drink)
+			newClient.cambiarPedido(drink)
+			clients.append(newClient)
 		else:
 			state = apology
 
@@ -81,7 +84,8 @@ while 1
 			state = verifyNewPerson
 
 	if state == verifyNewPerson
-		missunderstoodNewPerson = OralInteraction.verifyNewPerson(newPerson)
+		OralInteraction.verifyNewPerson(newPerson)
+		missunderstoodNewPerson = OralInteraction.affirmationCheck(OralInteraction.capturarAudio())
 		if missunderstoodNewPerson == False:
 			state = affirmationNewPerson
 		else:
