@@ -76,7 +76,7 @@ while 1
 		state = listeningNewPerson
 
 	if state == listeningNewPerson
-		newPerson = OralInteraction.listeningNewPerson(OralInteraction.capturarAudio())
+		newPerson = OralInteraction.capturarAudio()
 		if newPerson == ""
 			missunderstoodNewPerson = True
 			state = apology
