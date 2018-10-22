@@ -63,7 +63,6 @@ class OralInteraction():
             if i in self.listaNombres:
                 auxNombre = palabras[(palabras.index(i)+1):(len(palabras))]
                 nombre = self.buildString(auxNombre)
-                print(nombre)
             elif len(palabras)<=2:
                 nombre = string
         print(nombre)
@@ -91,6 +90,12 @@ class OralInteraction():
                     auxPedido.remove("gracias")
                 if "y" in auxPedido:
                     auxPedido.remove("y")
+                if ("esta" in auxPedido):
+                    auxPedido.remove("esta")
+                if ("está" in auxPedido):
+                    auxPedido.remove("está")
+                if ("bien" in auxPedido):
+                    auxPedido.remove("bien")
                 pedido = self.buildString(auxPedido)
                 print(pedido)
         return pedido
@@ -146,10 +151,19 @@ class OralInteraction():
 
     # Escuchar al bartender las alternativas disponibles
     def listingMissingObjects(self, clientes):
+        ordenCompleta = 0
         for i in clientes:
             if(i.darEstadoPedido() == "no esta listo"):
+                ordenCompleta = 0
                 clienteFaltante = i
-        self.askForAlternatives(clienteFaltante)
+            else:
+                ordenCompleta = 1
+        if ordenCompleta:
+            self.say_something("Veo que la orden está completa")
+        else:
+            self.askForAlternatives(clienteFaltante)
+        
+        return ordenCompleta
 
     def verifyMissingObject(self):
         self.say_something("¿Estoy en lo correcto?")
@@ -180,7 +194,11 @@ class OralInteraction():
     def requestClients(self):
         self.say_something("Por favor, acérquense las personas que ordenaron algo")
 
-    def informOrderState(self, cliente):
+    def informOrderState(self, clients, nombre):
+        for i in clients:
+            if (nombre == i.darNombre()):
+                cliente = i
+
         bFound = 0
         if( cliente.darEstadoPedido() == "esta listo"):
             string = "Hola" + cliente.darNombre() + "tu pedido está listo en la barra"
@@ -205,15 +223,36 @@ class OralInteraction():
         for i in palabras:
             if i in self.listaAlternativas:
                 auxAlternativas = palabras[(palabras.index(i)+1):(len(palabras))]
-            else: 
-                auxAlternativas = palabras
-        alternativa = self.buildString(auxAlternativas)
+                if "por" in auxAlternativas:
+                    auxAlternativas.remove("por")
+                if "porfavor" in auxAlternativas:
+                    auxAlternativas.remove("porfavor")
+                if "favor" in auxAlternativas:
+                    auxAlternativas.remove("favor")
+                if "gracias" in auxAlternativas:
+                    auxAlternativas.remove("gracias")
+                if "y" in auxAlternativas:
+                    auxAlternativas.remove("y")
+                if ("esta" in auxAlternativas):
+                    auxAlternativas.remove("esta")
+                if ("está" in auxAlternativas):
+                    auxAlternativas.remove("está")
+                if ("bien" in auxAlternativas):
+                    auxAlternativas.remove("bien")
+                alternativa = self.buildString(auxAlternativas)
+                if ("quiero" in auxAlternativas):
+                    auxAlternativas.remove("quiero")
+            elif len(palabras)<=2:
+                alternativa = string
         return alternativa 
 
     def confirmOrder(self, newAlternative):
         self.verifyDrink(newAlternative)
         string = self.captureAudio()
         return self.affirmationCheck(string)
+
+    def askForRepeat(self):
+        self.say_something("¿Podrías repetirme tu elección?")
 
     # --------------------------- Segunda interacción con el Bartender ----------------------
     def informNewChoice(self, clients, newOrder):
@@ -225,7 +264,7 @@ class OralInteraction():
 
     def returnToClients(self, clients):
         for i in clients:
-            if(i.darEstadoPedido() == "no esta listo"):
+            if(i.darEstadoPedido() == "esta listo"):
                 clienteFaltante = i
         self.say_something("Le informaré " + clienteFaltante.darNombre() + " que su nuevo pedido está listo. Gracias")
 
@@ -338,13 +377,10 @@ class OralInteraction():
     def affirmationCheck(self, string):
         palabras = string.split()
         afirmacion = False
-        nonegacion = False
         for i in palabras:
             if i in self.listaAfirmaciones:
                 afirmacion = True
-            if ~(i in self.listaNegaciones):
-                nonegacion = True
-        return afirmacion and nonegacion
+        return afirmacion
 
     def comprensionAlterntivas(self, string):
         opciones = string.split()

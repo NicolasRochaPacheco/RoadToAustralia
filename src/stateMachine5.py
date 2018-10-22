@@ -26,4 +26,3 @@ while True:
 
 	if state == 'die':
 		OralInteraction.finalExit()
-		
