@@ -20,97 +20,40 @@ class OralInteraction():
         self.t2sThread = T2SThread()
         #self.t2sThread = T2S()
         self.t2sThread.start()
-        self.saludos = Saludos()    
-
+        self.saludos = Saludos()
         #Declaración de Strings necesarios
         self.ListasEntendimiento = ListasEntendimiento()
-        self.clientes = []
+        #self.clientes = []
         self.listaNombres = self.ListasEntendimiento.darListaNombres()
         self.listaPedidos = self.ListasEntendimiento.darListaPedidos()
         self.listaAfirmaciones = self.ListasEntendimiento.darListaAfirmaciones()
         self.listaNegaciones = self.ListasEntendimiento.darListaNegaciones()
         self.listaBartender = self.ListasEntendimiento.darListaBartender()
         self.listaAlternativas = self.ListasEntendimiento.darListaAlternativas()
-        self.totalClientes = 1
-        self.alternativas = ""
-        self.alternativaReemplazo = ""
-        self.clienteFaltante = Cliente("", "", "no esta listo")
+        #self.totalClientes = 1
+        #self.alternativas = ""
+        #self.alternativaReemplazo = ""
+        #self.clienteFaltante = Cliente("", "", "no esta listo")
 
+    # ------------------------------------------------------------------------------
+    # -------------------------- Métodos Principales -------------------------------
+    # ------------------------------------------------------------------------------
 
-    #Métodos que definen qué dice el robot
+    # ---------------------- Interacción con los clientes --------------------------
     #Saludo al cliente
     def greet(self):
         string = self.saludos.darSaludos(random.randint(1,3))
-        self.t2sThread.say_something(string)
-        time.sleep(8)
+        self.say_something(string)
 
     #Disculparse por comprender mal el nombre
     def apologize(self):
         string = self.saludos.disculpar(random.randint(1,3))
-        self.t2sThread.say_something(string)
-        time.sleep(4)
+        self.say_something(string)
 
     #Asks the client for name
     def askForName(self):
         string = self.saludos.solicitarNombre(random.randint(1,3))
-        self.t2sThread.say_something(string)
-        time.sleep(2)
-
-    #Asks the client for drink
-    def askForDrink(self):
-        string = self.saludos.solicitarPedidos(random.randint(1,3))
-        self.t2sThread.say_something(string)
-        time.sleep(2)
-    
-    #Asks the client for newPerson
-    def askForNewPerson(self):
-        string = self.saludos.masClientes(random.randint(1,3))
-        self.t2sThread.say_something(string)
-        time.sleep(2)
-
-    #Confirms the understood name
-    def verifyName(self, pName):
-        verificacionInicial = self.saludos.verificarNombres(random.randint(1,3))
-        verificacionFinal = self.saludos.verificarFinal(random.randint(1,3))
-        string = verificacionInicial + pName + verificacionFinal
-        self.t2sThread.say_something(string)
-        time.sleep(2)
-
-    #Confirms the understood drink
-    def verifyDrink(self, pDrink):
-        string = self.saludos.confirmarPedidos(random.randint(1,3)) + pDrink
-        self.t2sThread.say_something(string)
-        time.sleep(6)
-
-    #Confirms the understood newPerson
-    def verifyNewPerson(self, pNewPerson):
-        string = "Comprendí que " + pNewPerson + " hay una nueva persona. Estoy en lo correcto?"
-        self.t2sThread.say_something(string)
-        time.sleep(2)
-
-    #If there are no more clients
-    def exit(self):
-        string = self.saludos.noMasClientes(random.randint(1,3))
-        self.t2sThread.say_something(string)
-        time.sleep(3)
-
-    #Builds the bartender string with the requests    
-    def stingBartender(self, nombre, pedido):
-        string = nombre + "me pidió" + pedido
-        self.t2sThread.say_something(string)    
-        time.sleep(4)
-
-    #Asks  the bartender for alternatives
-    def askForAlternatives(self, clienteFaltante):
-        string = "Veo que falta el pedido de " + clienteFaltante.darNombre() + " Qué alternativas tienes?"
-        self.t2sThread.say_something(string)
-        time.sleep(6)
-
-    #Informs the client the available alternatives
-    def informAlternativas(self, alternativas, clienteFaltante):
-        string = "Lo siento" + clienteFaltante.darNombre() + " . No tengo " + clienteFaltante.darPedido() + ". Podría ofrecerte: " + self.alternativas + ". ¿Que te gustaría?"
-        self.t2sThread.say_something(string)
-        time.sleep(5)
+        self.say_something(string)
 
     #Obtains the name upon a string
     def listeningName(self, string):
@@ -125,6 +68,11 @@ class OralInteraction():
                 nombre = string
         print(nombre)
         return nombre
+
+    #Asks the client for drink
+    def askForDrink(self):
+        string = self.saludos.solicitarPedidos(random.randint(1,3))
+        self.say_something(string)
 
     #Obtains the drink upon a string
     def listeningDrink(self, string):
@@ -146,7 +94,178 @@ class OralInteraction():
                 pedido = self.buildString(auxPedido)
                 print(pedido)
         return pedido
+    
+    #Asks the client for newPerson
+    def askForNewPerson(self):
+        string = self.saludos.masClientes(random.randint(1,3))
+        self.say_something(string)
 
+    #Confirms the understood name
+    def verifyName(self, pName):
+        verificacionInicial = self.saludos.verificarNombres(random.randint(1,3))
+        verificacionFinal = self.saludos.verificarFinal(random.randint(1,3))
+        string = verificacionInicial + pName + verificacionFinal
+        self.say_something(string)
+
+    #Confirms the understood drink
+    def verifyDrink(self, pDrink):
+        verificacionInicial = self.saludos.verificarPedidos(random.randint(1,3)) + pDrink
+        verificacionFinal = self.saludos.verificarFinal(random.randint(1,3))
+        string = verificacionInicial + verificacionFinal
+        self.say_something(string)
+
+    #Confirms the understood newPerson
+    def verifyNewPerson(self, pNewPerson):
+        string = "Comprendí que " + pNewPerson + " hay una nueva persona. Estoy en lo correcto?"
+        self.say_something(string)
+
+    #If there are no more clients
+    def exit(self):
+        string = self.saludos.noMasClientes(random.randint(1,3))
+        self.say_something(string)
+
+ # ------------------------------------- Interacción con el Bartender ---------------------------------
+    # Informar al bartender los pedidos obtenidos
+    def listingRequest(self, clientes):
+        self.say_something("Hola, Héctor, los pedidos que recibí son los siguientes:")
+        x = 0
+        while x < len(clientes):
+            self.clientAttributes(clientes[x])
+            x+=1
+        self.say_something("Avísame cuando esten listos")
+
+    def waitingBarmanResponse(self):
+        alternativesReady = 0
+        string = self.captureAudio()
+        response = string.split()
+        listado = []
+        for i in response:
+            if i in self.listaBartender:
+                alternativesReady = 1
+        return alternativesReady
+
+    # Escuchar al bartender las alternativas disponibles
+    def listingMissingObjects(self, clientes):
+        for i in clientes:
+            if(i.darEstadoPedido() == "no esta listo"):
+                clienteFaltante = i
+        self.askForAlternatives(clienteFaltante)
+
+    def verifyMissingObject(self):
+        self.say_something("¿Estoy en lo correcto?")
+        return self.affirmationCheck(self.captureAudio())
+
+    def requestAlternatives(self):
+        self.say_something("¿Que alternativas tienes?")
+
+    def listeningAlternatives(self):
+        string = self.comprensionAlterntivas(self.captureAudio())
+        return string
+
+    def verifyAlternatives(self, alternatives):
+        self.verifyAlternativesBartender(alternatives)
+        return self.affirmationCheck(self.captureAudio())
+
+    def waveBarman(self):
+        farewellBarman = ("Listo. Le avisaré a los clientes")
+        self.say_something(farewellBarman)
+
+    def apologizeBarman(self):
+        self.say_something("Disculpa verifique mal, verificaré de nuevo")
+
+    def apologizeAlternatives(self):
+        self.say_something("Que pena, te entendí mal, podrías repetirlo?")
+
+    # ------------------------ Segunda interacción con el Cliente -------------------------------
+    def requestClients(self):
+        self.say_something("Por favor, acérquense las personas que ordenaron algo")
+
+    def informOrderState(self, cliente):
+        bFound = 0
+        if( cliente.darEstadoPedido() == "esta listo"):
+            string = "Hola" + cliente.darNombre() + "tu pedido está listo en la barra"
+            self.say_something(string)
+            bFound = 1
+        else:
+            string = "Hola" + cliente.darNombre() + "tu pedido no está disponible en el momento"
+            self.say_something(string)
+            bFound = 0
+        return bFound
+
+    def apologizeClient(self):
+        self.say_something("Disculpa por el inconveniente")
+
+    def listingAlternatives(self, alternatives):
+        self.say_something("Puedes pedir alguna de las siguientes alternativas: " + alternatives + " ¿Cúal deseas?")
+
+    def listenChoice(self):
+        string = self.captureAudio()
+        palabras = string.split()
+        auxAlternativas =[]
+        for i in palabras:
+            if i in self.listaAlternativas:
+                auxAlternativas = palabras[(palabras.index(i)+1):(len(palabras))]
+            else: 
+                auxAlternativas = palabras
+        alternativa = self.buildString(auxAlternativas)
+        return alternativa 
+
+    def confirmOrder(self, newAlternative):
+        self.verifyDrink(newAlternative)
+        string = self.captureAudio()
+        return self.affirmationCheck(string)
+
+    # --------------------------- Segunda interacción con el Bartender ----------------------
+    def informNewChoice(self, clients, newOrder):
+        for i in clients:
+            if(i.darEstadoPedido() == "no esta listo"):
+                clienteFaltante = i
+        string = "Hola Héctor, " + clienteFaltante.darNombre() + " cambió su pedido por " + newOrder + " Avísame cuando este listo"
+        self.say_something(string)
+
+    def returnToClients(self, clients):
+        for i in clients:
+            if(i.darEstadoPedido() == "no esta listo"):
+                clienteFaltante = i
+        self.say_something("Le informaré " + clienteFaltante.darNombre() + " que su nuevo pedido está listo. Gracias")
+
+
+    #-------------------------- Tercera interacción con los clientes-----------------------------
+    def askForMissingClient(self, clients):
+        for i in clients:
+            if(i.darEstadoPedido() == "no esta listo"):
+                clienteFaltante = i
+        self.say_something(clienteFaltante.darNombre() +", podría pedirte el favor de que te ubiques frente a mi?")
+
+    def informReadyChoiceClient(self, clients):
+        for i in clients:
+            if(i.darEstadoPedido() == "no esta listo"):
+                clienteFaltante = i
+        self.say_something("Hola, "+ clienteFaltante.darNombre() + " el cambio de tu pedido está listo.")
+
+    def finalExit(self):
+        self.say_something("Hasta pronto, nos vemos en Australia")
+
+    # ---------------------------------------------------------------------------------------------
+    # ------------------------------------ Sub-procesos -------------------------------------------
+    # ---------------------------------------------------------------------------------------------
+    #Builds the bartender string with the requests    
+    def stringBartender(self, nombre, pedido):
+        string = nombre + "me pidió" + pedido
+        self.say_something(string)    
+        time.sleep(4)
+
+    #Asks  the bartender for alternatives
+    def askForAlternatives(self, clienteFaltante):
+        string = "Veo que falta el pedido de " + clienteFaltante.darNombre()
+        self.say_something(string)
+        time.sleep(6)
+
+    #Informs the client the available alternatives
+    def informAlternativas(self, alternativas, clienteFaltante):
+        string = "Lo siento" + clienteFaltante.darNombre() + " . No tengo " + clienteFaltante.darPedido() + ". Podría ofrecerte: " + self.alternativas + ". ¿Que te gustaría?"
+        self.say_something(string)
+        time.sleep(5)
 
     #comprensionBartender
     #Returns true when the bartender is ready with the drinks
@@ -166,8 +285,8 @@ class OralInteraction():
         for i in opciones:
             if i == "son":
                 listado = opciones[opciones.index(i)+1:len(opciones)]
-        self.alternativas = self.buildString(listado)
-        return self.alternativas
+        alternativas = self.buildString(listado)
+        return alternativas
 
     #compresionAlternativaCliente
     #obtains the chosen alternative from the client upon a string
@@ -184,13 +303,11 @@ class OralInteraction():
 
     #verificarAlternativas
     #verifies the understood avilable alternatives
-    def verifyAlternativesBartender(self):
+    def verifyAlternativesBartender(self, alternatives):
         verificacionInicial = "Comprendí las alternativas son "
         verificacionFinal = self.saludos.verificarFinal(random.randint(1,3))
-        string = verificacionInicial + self.alternativas + verificacionFinal
-        self.t2sThread.say_something(string)
-        time.sleep(5)
-
+        string = verificacionInicial + alternatives + verificacionFinal
+        self.say_something(string)
 
     #Métodos adicionales
     #Reconstruccion de strings
@@ -229,9 +346,17 @@ class OralInteraction():
                 nonegacion = True
         return afirmacion and nonegacion
 
+    def comprensionAlterntivas(self, string):
+        opciones = string.split()
+        listado = []
+        for i in opciones:
+            if i == "son":
+                listado = opciones[opciones.index(i)+1:len(opciones)]
+        alternatives = self.buildString(listado)
+        return alternatives
 
-    #Métodos de captura de audio
-    #Captura de audio
+    # --------------------------------- Métodos de audio -----------------------------------
+    # Captura de audio (S2T)
     def captureAudio(self):
         r = sr.Recognizer()
         with sr.Microphone(device_index = 5, sample_rate = 44100, chunk_size = 512) as source:
@@ -249,113 +374,22 @@ class OralInteraction():
             audio1 = r.recognize_google(audio, language='es-ES')
             print(audio1)
         except sr.UnknownValueError:
-            audio1 = "Google Speech Recognition could not understand audio"
+            audio1 = " "
         except sr.RequestError as e:
-            audio1 = "Could not request results from Google Speech Recognition service"
+            audio1 = " "
         return audio1
 
-
-    #Método para obtener los pedidos    
-    def pedidos(self):
-        x=0
-        self.continuar = 0
-        while x < self.totalClientes:
-            clienteActual = Cliente("","","no esta listo")
-            self.saludar()
-            print("Nombre")
-            #while self.audioDefinitivo() == 0:
-                #self.disculpaRuido()
-            #print(self.capturarAudio())
-            self.nombre = self.comprensionNombre(self.capturarAudio())
-            while ((self.nombre == "") or (self.nombre==" ")):
-                print("Ruido")
-                self.disculpaRuido()
-                self.nombre = self.comprensionNombre(self.capturarAudio())
-
-            self.noComprendio = 0
-            while self.continuar == 0:
-                if self.noComprendio == 1:
-                    self.disculparNombre()
-                    print("Nombre equivocado")
-                    self.nombre = self.comprensionNombre(self.capturarAudio())
-                    clienteActual.cambiarNombre(self.nombre)
-                self.verificarNombre(self.nombre)
-                self.continuar = self.afirmacionCheck(self.capturarAudio())
-                self.noComprendio = 1
-            print("Nombre: " + str(self.nombre))
-            clienteActual.cambiarNombre(self.nombre)
-
-            self.continuar = 0
-
-            self.solicitarPedido()
-            print("Pedido")
-            
-            self.pedido = self.comprensionPedido(self.capturarAudio())
-            while ((self.pedido == "") or (self.pedido==" ")):
-                print("Ruido")
-                self.disculpaRuido()
-                print(self.pedido)
-                self.pedido = self.comprensionPedido(self.capturarAudio())
-                print(self.pedido)
-
-            self.noComprendio = 0
-            while self.continuar == 0:
-                if self.noComprendio == 1:
-                    self.disculparPedido()
-                    print("No entendido el pedido")
-                    self.pedido = self.comprensionPedido(self.capturarAudio())
-                    clienteActual.cambiarPedido(self.ajustePedido(self.pedido))
-                self.verificarPedido(self.pedido)
-                self.continuar = self.afirmacionCheck(self.capturarAudio())
-                self.noComprendio = 1
-            print("Pedido: " + str(self.ajustePedido(self.pedido)))
-            clienteActual.cambiarPedido(self.ajustePedido(self.pedido))
-            
-            self.confirmarPedido(self.pedido)
-            self.continuar = 0
-
-            self.clientes.append(clienteActual)
-            
-            self.masClientes()
-            if (self.afirmacionCheck(self.capturarAudio()) == 1):
-                self.totalClientes += 1
-            else:
-                self.noMasClientes()
-            x+=1
-        self.csvfile_writer()
-
-    #Informar al bartender los pedidos obtenidos
-    def bartender(self):
-        self.csvfile_reader()
-        time.sleep(5)
-        self.t2sThread.say_something("Hola, Héctor, los pedidos que recibí son los siguientes:")
-        time.sleep(5)
-        x = 0
-        while x < self.totalClientes:
-            self.stingBartender(self.clientes[x].darNombre(), self.clientes[x].darPedido())
-            time.sleep(5)
-            x+=1
-        self.t2sThread.say_something("Me los podrías alistar?")
-
-    #Escuchar al bartender las alternativas disponibles
-    def alternativasProductoFaltante(self):
-        self.continuar = 0
-        self.noComprendio = 0
-        self.objetoFaltante()
-        self.pedidoAlternativas(self.clienteFaltante)
-        self.comprensionAlterntivas(self.capturarAudio())
-        while self.continuar == 0:
-        	if self.noComprendio == 1:
-        		self.disculparAlternativas()
-        		print("No entendido las alternativas")
-        		self.comprensionAlterntivas(self.capturarAudio())
-        	self.verificarAlternativas()
-        	time.sleep(5)
-        	self.continuar = self.afirmacionCheck(self.capturarAudio())
-        	self.noComprendio = 1
+    # Método de habla (T2S)
+    def say_something(self,text):
+        grabacion = gTTS(text = text, lang = 'es')
+        grabacion.save('output.mp3')
+        os.system("mpg321 output.mp3")
 
 
-       	
+    
+    #------------------------------------------------------------------------------------
+    # ------------------------------- Codigo pasado -------------------------------------
+    #------------------------------------------------------------------------------------   	
     #Informar al cliente de las alternativas dispinibles, escucha y verifica la respeusta
     def clienteAlternativaReemplazo(self):
         self.informarAlternativas(self.alternativas, self.clienteFaltante)
@@ -374,3 +408,53 @@ class OralInteraction():
     	self.alternativasProductoFaltante()
     	self.clienteAlternativaReemplazo()
     	self.bartenderAlternativaReemplazo()
+
+
+    ################################## 
+
+    def clientAttributes(self, client):
+        nombre = client.darNombre()
+        pedido = client.darPedido()
+        age = client.giveAge()
+        
+        if client.giveGlasses() == "glasses":
+            glasses = "tiene gafas"
+        else:
+            glasses = "no tiene gafas"
+        color = {'blonde': "mono", 'black':"negro", 'red':"rojo",'brown':"cafe"}
+        hairColor = color[client.giveHairColor()]
+        if client.giveHeadWear() > 0.7:
+            cabeza = "tiene sombrero"
+        elif client.giveBald() > 0.7:
+            cabeza = "es calvo"
+        else:
+            hairColor = color[client.hairColor]
+            cabeza = "tiene pelo " + hairColor
+        
+        if client.giveBeard() < 0.3:
+            barba = "no tiene barba"
+        elif client.giveBeard() > 0.7:
+            barba = "tiene barba"
+        else:
+            barba = "tiene poca barba"
+
+        if client.giveEyeMakeUp():
+            eyeMakeUp = ""
+        else:
+            eyeMakeUp = "no"
+
+        if client.giveLipMakeUp():
+            lipMakeUp = ""
+        else:
+            lipMakeUp = "no"        
+
+        if client.giveGender() == "male":
+            gender = "hombre"
+            string = nombre + " quien " + cabeza + ", " + glasses + " y " + barba + "me pidio " + pedido
+            tiempo = 8
+        else :
+            gender = "mujer"
+            string = nombre + " quien " + cabeza + ", " + glasses + ", " + eyeMakeUp + "tiene maquillaje en los ojos y" + lipMakeUp + " tiene labial me pidió " + pedido
+            tiempo = 10
+        
+        self.say_something(string)
